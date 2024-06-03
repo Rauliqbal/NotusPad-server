@@ -1,4 +1,5 @@
 const User = require('../models/user.model')
+const bcrypt = require('bcrypt')
 
 
 // REGISTER USER
@@ -33,6 +34,8 @@ const login = async (req,res) => {
     // VALIDATE
     const user = await User.findOne({email});
     if(!user) res.status(401).json({message: "Email tidak ditemukan"})
+    
+    const passwordValid = await bcrypt.compare()
   } catch (error) {
     
   }
