@@ -61,4 +61,30 @@ const login = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
-module.exports = { register, login };
+
+// LOGOUT USER
+const logout = async (req, res) => {
+  res.clearCookie("auth");
+  return res.status(200).json({ message: "Akun terlogout" });
+};
+
+// AUTH USER
+const authUser = async (req, res) => {
+  const token = req.cookies.auth;
+  const _id = jwt.verify(token, process.env.NODE_TOKEN).payload;
+
+  try {
+    const response = await User.findOne(
+      { _id },
+      { username: 1, email: 1, registrationDate: 1 }
+    );
+
+    const user = response;
+    return res
+      .status(200)
+      .json({ message: `Hello ${user.username}`, data: user });
+  } catch (error) {
+    res.status(401).json({ message: "unauthorized" });
+  }
+};
+module.exports = { register, login, logout, authUser };
