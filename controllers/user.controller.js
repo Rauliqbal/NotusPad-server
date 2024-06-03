@@ -1,43 +1,64 @@
-const User = require('../models/user.model')
-const bcrypt = require('bcrypt')
-
+const User = require("../models/user.model");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 // REGISTER USER
-const register = async (req,res) => {
-  const {username,email,password} = req.body
+const register = async (req, res) => {
+  const { username, email, password } = req.body;
   try {
     const newUser = new User({
       username,
       email,
-      password
-    })
+      password,
+    });
 
-    // VALIDATE 
-    const checkUser = await User.findOne({email})
-    if(checkUser) return res.status(400).json({message: "User telah digunakan"})
-    
-    // SAVED 
-    const savedUser = await newUser.save()
+    // VALIDATE
+    const checkUser = await User.findOne({ email });
+    if (checkUser)
+      return res.status(400).json({ message: "User telah digunakan" });
+
+    // SAVED
+    const savedUser = await newUser.save();
     res.status(200).json({
       message: "Akun berhasil dibuat",
-      data: savedUser
-    })
+      data: savedUser,
+    });
   } catch (error) {
-    res.status(500).json({message: error.message})
+    res.status(500).json({ message: error.message });
   }
-}
+};
 
 // LOGIN USER
-const login = async (req,res) => {
-  const {email,password} = req.body
+const login = async (req, res) => {
+  const { email } = req.body;
   try {
     // VALIDATE
-    const user = await User.findOne({email});
-    if(!user) res.status(401).json({message: "Email tidak ditemukan"})
-    
-    const passwordValid = await bcrypt.compare()
+    const user = await User.findOne({ email });
+    if (!user)
+      return res.status(401).json({ message: "Email tidak ditemukan" });
+
+    const passwordValid = await bcrypt.compare(
+      `${req.body.password}`,
+      user.password
+    );
+    if (!passwordValid)
+      return res.status(401).json({ message: "Password salah" });
+
+    const { password, ...user_data } = user._doc;
+
+    // JWT
+    const maxAge = 3 * 24 * 60 * 60;
+    const createJwt = (payload) => {
+      return jwt.sign({ payload }, process.env.NODE_TOKEN, {
+        expiresIn: maxAge,
+      });
+    };
+    const token = createJwt(user._id, maxAge);
+    res.cookie("auth", token, { httpOnly: true, maxAge: maxAge * 10 });
+
+    res.status(200).json({ message: "Akun berhasil login", data: user_data });
   } catch (error) {
-    
+    res.status(400).json({ message: error.message });
   }
-}
-module.exports = {register}
+};
+module.exports = { register, login };
