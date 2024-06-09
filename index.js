@@ -9,11 +9,7 @@ const router = require("./routes/user");
 const app = express();
 
 // MIDDLEWARE
-if (process.env.NODE_ENV === "development") {
-  app.use(cors({ origin: "http://localhost:5173" }));
-} else {
-  app.use(cors());
-}
+app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -28,4 +24,6 @@ app.use("/api", router);
 
 // RUN SERVER
 const port = process.env.NODE_DB_PORT || 3000;
-app.listen(port, () => console.log("Server is running on port " + port));
+app.listen(port, () =>
+  console.log(`SERVER RUNNING:   http://localhost:${port}/`)
+);
