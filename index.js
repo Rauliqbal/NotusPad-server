@@ -4,7 +4,8 @@ const morgan = require("morgan");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const database = require("./config/database");
-const router = require("./routes/user");
+const userRouter = require("./routes/user");
+const noteRouter = require('./routes/note')
 
 const app = express();
 
@@ -20,10 +21,13 @@ const DB_URI = process.env.NODE_DB_URI;
 database(DB_URI);
 
 // AUTH ROUTES
-app.use("/api", router);
+app.use("/api", userRouter);
+
+//NOTE ROUTES
+app.use('/api', noteRouter)
 
 // RUN SERVER
 const port = process.env.NODE_DB_PORT || 3000;
 app.listen(port, () =>
-  console.log(`SERVER RUNNING:   http://localhost:${port}/`)
+   console.log(`SERVER RUNNING:   http://localhost:${port}/`)
 );
