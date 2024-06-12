@@ -62,7 +62,7 @@ const login = async (req, res) => {
       maxAge: maxAge * 10,
       httpOnly: true,
       secure: true,
-      sameSite: "none",
+      sameSite: "Strict",
     });
 
     res.status(200).json({ message: "Akun berhasil login", data: user_data });
