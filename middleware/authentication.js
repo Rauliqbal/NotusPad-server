@@ -5,7 +5,10 @@ const authLogin = (req, res, next) => {
   const token = req.cookies.auth;
   if (token) {
     try {
-      const _id = jwt.verify(token, process.env.NODE_TOKEN).payload;
+      const _id = jwt.verify(
+        token,
+        "0e1e3ac528da43f9fe53441e49344692d4e068ac7f10fd2fdded47740fb770a8"
+      ).payload;
       User.findOne({ _id })
         .then(next())
         .catch((error) => {

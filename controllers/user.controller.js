@@ -49,9 +49,13 @@ const login = async (req, res) => {
     // JWT
     const maxAge = 3 * 24 * 60 * 60;
     const createJwt = (payload) => {
-      return jwt.sign({ payload }, process.env.NODE_TOKEN, {
-        expiresIn: maxAge,
-      });
+      return jwt.sign(
+        { payload },
+        "0e1e3ac528da43f9fe53441e49344692d4e068ac7f10fd2fdded47740fb770a8",
+        {
+          expiresIn: maxAge,
+        }
+      );
     };
     const token = createJwt(user._id, maxAge);
     res.cookie("auth", token, { maxAge: maxAge * 10 });
@@ -71,7 +75,10 @@ const logout = async (req, res) => {
 // AUTH USER
 const authUser = async (req, res) => {
   const token = req.cookies.auth;
-  const _id = jwt.verify(token, process.env.NODE_TOKEN).payload;
+  const _id = jwt.verify(
+    token,
+    "0e1e3ac528da43f9fe53441e49344692d4e068ac7f10fd2fdded47740fb770a8"
+  ).payload;
 
   try {
     const response = await User.findOne(

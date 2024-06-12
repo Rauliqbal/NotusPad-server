@@ -10,14 +10,15 @@ const noteRouter = require("./routes/note");
 const app = express();
 
 // MIDDLEWARE
-app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+app.use(cors({ origin: "https://notuspad.vercel.app/", credentials: true }));
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // CONNECT TO DATABASE
-const DB_URI = process.env.MONGODB_URI;
+const DB_URI =
+  "mongodb+srv://muhamadrauliqbal13:rauliqbal1302@notuspad.qfcqsee.mongodb.net/notuspad";
 database(DB_URI);
 
 // AUTH ROUTES
