@@ -58,7 +58,7 @@ const login = async (req, res) => {
       );
     };
     const token = createJwt(user._id, maxAge);
-    res.cookie("auth", token, { maxAge: maxAge * 10 });
+    res.cookie("auth", token, { maxAge: maxAge * 10, httpOnly: true });
 
     res.status(200).json({ message: "Akun berhasil login", data: user_data });
   } catch (error) {
