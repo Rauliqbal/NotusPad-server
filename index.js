@@ -10,7 +10,13 @@ const noteRouter = require("./routes/note");
 const app = express();
 
 // MIDDLEWARE
-app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    methods: "GET,PUT,POST,DELETE",
+    credentials: true,
+  })
+);
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

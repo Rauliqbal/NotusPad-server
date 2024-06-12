@@ -61,7 +61,7 @@ const login = async (req, res) => {
     res.cookie("auth", token, {
       maxAge: maxAge * 10,
       httpOnly: true,
-      sameSite: "lax",
+      sameSite: "none",
     });
 
     res.status(200).json({ message: "Akun berhasil login", data: user_data });
