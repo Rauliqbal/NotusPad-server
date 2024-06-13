@@ -2,7 +2,6 @@ require("dotenv").config();
 const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
-const cookieParser = require("cookie-parser");
 const database = require("./config/database");
 const userRouter = require("./routes/user");
 const noteRouter = require("./routes/note");
@@ -12,19 +11,17 @@ const app = express();
 // MIDDLEWARE
 app.use(
   cors({
-    origin: "http://localhost:5173",
-    methods: "GET,PUT,POST,DELETE",
-    credentials: true,
+    origin: "*",
   })
 );
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
 
 // CONNECT TO DATABASE
 const DB_URI =
-  "mongodb+srv://muhamadrauliqbal13:rauliqbal1302@notuspad.qfcqsee.mongodb.net/notuspad";
+  // "mongodb+srv://muhamadrauliqbal13:rauliqbal1302@notuspad.qfcqsee.mongodb.net/notuspad"
+  "mongodb://localhost:27017/db_notuspad";
 database(DB_URI);
 
 // AUTH ROUTES

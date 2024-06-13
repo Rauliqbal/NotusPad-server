@@ -7,7 +7,7 @@ const createNote = async (req, res) => {
   const newNote = new Note({
     title,
     content,
-    user_id: req.user._id,
+    user_id: req.user.id,
   });
 
   try {
@@ -24,7 +24,7 @@ const createNote = async (req, res) => {
 // GET Note
 const getNote = async (req, res) => {
   try {
-    const notes = await Note.find({ user_id: req.user._id });
+    const notes = await Note.find({ user_id: req.user.id });
     res.status(200).json({ message: "Berhasil ambil data note", data: notes });
   } catch (error) {
     res.status(404).json({ message: "Data note tidak ditemukan" });

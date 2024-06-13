@@ -1,6 +1,7 @@
 const User = require("../models/user.model");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const accessToken = require("../config/accessToken");
 
 // REGISTER USER
 const register = async (req, res) => {
@@ -33,7 +34,7 @@ const login = async (req, res) => {
   const { email } = req.body;
   try {
     // VALIDATE
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email: email });
     if (!user)
       return res.status(401).json({ message: "Email tidak ditemukan" });
 
@@ -44,59 +45,33 @@ const login = async (req, res) => {
     if (!passwordValid)
       return res.status(401).json({ message: "Password salah" });
 
-    const { password, ...user_data } = user._doc;
-
-    // JWT
-    const maxAge = 3 * 24 * 60 * 60;
-    const createJwt = (payload) => {
-      return jwt.sign(
-        { payload },
-        "0e1e3ac528da43f9fe53441e49344692d4e068ac7f10fd2fdded47740fb770a8",
-        {
-          expiresIn: maxAge,
-        }
-      );
-    };
-    const token = createJwt(user._id, maxAge);
-    res.cookie("auth", token, {
-      maxAge: maxAge * 10,
-      httpOnly: true,
-      secure: true,
-      sameSite: "Lax",
+    const token = jwt.sign({ id: user._id }, accessToken, {
+      expiresIn: "1h",
     });
 
-    res.status(200).json({ message: "Akun berhasil login", data: user_data });
+    const { password, ...user_data } = user._doc;
+
+    res.status(200).json({
+      message: "Akun berhasil login",
+      data: user_data,
+      token,
+    });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 };
 
-// LOGOUT USER
-const logout = async (req, res) => {
-  res.clearCookie("auth");
-  return res.status(200).json({ message: "Akun terlogout" });
-};
-
 // AUTH USER
 const authUser = async (req, res) => {
-  const token = req.cookies.auth;
-  const _id = jwt.verify(
-    token,
-    "0e1e3ac528da43f9fe53441e49344692d4e068ac7f10fd2fdded47740fb770a8"
-  ).payload;
+  const user = await User.findOne({
+    _id: req.user.id,
+  });
+  if (!user) res.status(401).json({ message: "unauthorized" });
 
-  try {
-    const response = await User.findOne(
-      { _id },
-      { username: 1, email: 1, registrationDate: 1 }
-    );
+  const { password, ...user_data } = user._doc;
 
-    const user = response;
-    return res
-      .status(200)
-      .json({ message: `Hello ${user.username}`, data: user });
-  } catch (error) {
-    res.status(401).json({ message: "unauthorized" });
-  }
+  return res
+    .status(200)
+    .json({ message: `Hello ${user.username}`, data: user_data });
 };
-module.exports = { register, login, logout, authUser };
+module.exports = { register, login, authUser };

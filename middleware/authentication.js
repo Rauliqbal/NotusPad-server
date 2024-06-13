@@ -1,27 +1,18 @@
+const accessToken = require("../config/accessToken");
 const jwt = require("jsonwebtoken");
-const User = require("../models/user.model");
 
-const authLogin = (req, res, next) => {
-  const token = req.cookies.auth;
-  if (token) {
-    try {
-      const _id = jwt.verify(
-        token,
-        "0e1e3ac528da43f9fe53441e49344692d4e068ac7f10fd2fdded47740fb770a8"
-      ).payload;
-      User.findOne({ _id })
-        .then(next())
-        .catch((error) => {
-          console.log(error);
-          return res.status(401).json({ message: "unauthorized" });
-        });
-    } catch (error) {
-      console.log(error);
-      return res.status(400).json({ message: "token kadaluarsa", error });
-    }
-  } else {
-    return res.status(401).json({ message: "unauthorized" });
-  }
+const authToken = async (req, res, next) => {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+
+  if (!token) return res.status(401).json({ message: "Unauthenticated." });
+
+  // Verify token
+  jwt.verify(token, accessToken, (err, decoded) => {
+    if (err) return res.status(401).json({ message: "Invalid token" });
+    req.user = decoded;
+    next();
+  });
 };
 
-module.exports = authLogin;
+module.exports = authToken;
