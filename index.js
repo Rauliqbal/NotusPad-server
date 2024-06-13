@@ -20,13 +20,18 @@ app.use(express.urlencoded({ extended: true }));
 
 // CONNECT TO DATABASE
 const DB_URI =
-  // "mongodb+srv://muhamadrauliqbal13:rauliqbal1302@notuspad.qfcqsee.mongodb.net/notuspad"
-  "mongodb://localhost:27017/db_notuspad";
+  "mongodb+srv://muhamadrauliqbal13:rauliqbal1302@notuspad.qfcqsee.mongodb.net/notuspad";
 database(DB_URI);
+
+app.get("/", (req, res) => {
+  res.json({
+    message: "Hello World!🌏",
+    myWebsite: "https://rauliqbal.my.id",
+  });
+});
 
 // AUTH ROUTES
 app.use("/api", userRouter);
-
 //NOTE ROUTES
 app.use("/api", noteRouter);
 
