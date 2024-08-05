@@ -20,7 +20,8 @@ app.use(express.urlencoded({ extended: true }));
 
 // CONNECT TO DATABASE
 const DB_URI =
-  "mongodb+srv://muhamadrauliqbal13:rauliqbal1302@notuspad.qfcqsee.mongodb.net/notuspad";
+  "mongodb+srv://rauliqbal:HxBHdo7aANZQibkm@cluster0.jy3fw27.mongodb.net/db_notuspad?retryWrites=true&w=majority&appName=Cluster0";
+// "mongodb://localhost:27017/db_notuspad";
 database(DB_URI);
 
 app.get("/", (req, res) => {
